@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic-Tac-Toe</title>
+    <style>
+      .board {
+        margin-top: 70px;
+        justify-content: center;
+        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 5px;
+      }
+      .cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 100px;
+        background-color: #ddd;
+        font-size: 24px;
+      }
+      .winner {
+        font-size: 24px;
+        text-align: center;
+        margin-top: 20px;
+      }
+      .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #1b7ae0;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: block;
+        margin: 0 auto;
+        margin-top: 20px;
+      }
+      .btn:hover{
+        background-color: #04101c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board"></div>
+    <div class="winner"></div>
+    <button class="btn" onclick="resetGame()">Restart</button>
+
+    <script>
+      const board = document.querySelector(".board");
+      const btn = document.querySelector(".btn");
+      const winnerMessage = document.querySelector(".winner");
+      let currentPlayer = "X";
+      let winner = null;
+      const cells = Array(9).fill(null); // Initialize cells with null values
+
+      function checkWinner() {
+        const winningConditions = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8], //rows
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8], //columns
+          [0, 4, 8],
+          [2, 4, 6], //diagonals
+        ];
+        for (let condition of winningConditions) {
+          const [a, b, c] = condition;
+          if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c])
+            return cells[a];
+        }
+
+        return null;
+      }
+
+      function clear() {
+        winnerMessage.innerHTML = "";
+      }
+
+      function handleCellClick(index) {
+        if (winner || cells[index]) return;
+
+        cells[index] = currentPlayer;
+        render();
+
+        winner = checkWinner();
+
+        if (winner) {
+          winnerMessage.innerHTML = `Player ${winner} has won the game!`;
+          setTimeout(() => {
+            clear();
+          }, 3000);
+        } else if (!cells.includes(null)) {
+          winnerMessage.innerHTML = "The game is a tie!";
+          setTimeout(() => {
+            resetGame();
+            clear();
+          }, 3000);
+        } else {
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+      }
+
+      function render() {
+        board.innerHTML = "";
+        cells.forEach((value, index) => {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.textContent = value || "";
+          cell.addEventListener("click", handleCellClick.bind(null, index));
+          board.appendChild(cell);
+        });
+      }
+
+      function resetGame() {
+        cells.fill(null); // Reset cells to null values
+        currentPlayer = "X";
+        winner = null;
+        render();
+      }
+
+      render();
+    </script>
+  </body>
+</html>
